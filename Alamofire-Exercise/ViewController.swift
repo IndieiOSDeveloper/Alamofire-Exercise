@@ -1,6 +1,6 @@
 //
 //  ViewController.swift
-//  Alamofire-Exercise Alamofire-Exercise Alamofire-Exercise
+//  Alamofire-Exercise
 //
 //  Created by seokhyun kim on 2018-03-22.
 //  Copyright © 2018 seokhyun kim. All rights reserved.
@@ -12,6 +12,8 @@ import Alamofire
 class ViewController: UIViewController {
 
     @IBOutlet var currentTime: UILabel!
+    
+    //Get method
     @IBAction func callCurrentTime(_ sender: Any) {
         do {
             //GET
@@ -24,6 +26,18 @@ class ViewController: UIViewController {
             print(e.localizedDescription)
         }
     }
+    
+    //Using Alamofire(GET)
+    @IBAction func callCurrentTimeUsingAlamofire(_ sender:Any) {
+        let url = "http://swiftapi.rubypaper.co.kr:2029/practice/currentTime"
+        Alamofire.request(url).responseString() { response in
+            print("SUCCESS : \(response.result.isSuccess)")
+            print("RESULT : \(response.result.value!)")
+            self.currentTime.text = response.result.value!
+            self.currentTime.sizeToFit()
+        }
+    }
+    
     @IBOutlet var userId: UITextField!
     @IBOutlet var name: UITextField!
     @IBOutlet var responseView: UITextView!
@@ -125,7 +139,22 @@ class ViewController: UIViewController {
         }
         task.resume()
     }
-
+    //Using Alamofire(POST) Return JSON
+    @IBAction func alamofire(_ sender: Any) {
+        let userId = (self.userId.text)!
+        let name = (self.name.text)!
+        let param = ["userId" : userId, "name" : name]
+        let url = "http://swiftapi.rubypaper.co.kr:2029/practice/echo"
+        let alamo = Alamofire.request(url, method: .post, parameters: param, encoding: URLEncoding.httpBody)
+        alamo.responseJSON() { response in
+            print("JSON = \(response.result.value!)")
+            if let jsonObject = response.result.value as? [String: Any] {
+                self.responseView.text = "ID : \(jsonObject["userId"]!)" + "\n"
+                    + "Name : \(jsonObject["name"]!)"
+            }
+        }
+        
+    }
 
 }
 
